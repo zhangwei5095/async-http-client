@@ -12,16 +12,18 @@
  */
 package org.asynchttpclient.extras.registry;
 
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.AsyncHttpClientConfig;
-import org.asynchttpclient.AsyncHttpProvider;
-import org.asynchttpclient.DefaultAsyncHttpClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.asynchttpclient.Dsl.asyncHttpClient;
 
 import java.lang.reflect.Constructor;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.asynchttpclient.AsyncHttpClient;
+import org.asynchttpclient.AsyncHttpClientConfig;
+import org.asynchttpclient.DefaultAsyncHttpClient;
+import org.asynchttpclient.DefaultAsyncHttpClientConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The AsyncHttpClientFactory returns back an instance of AsyncHttpClient. The
@@ -47,7 +49,7 @@ public class AsyncHttpClientFactory {
 
         try {
             if (attemptInstantiation())
-                return (AsyncHttpClient) asyncHttpClientImplClass.newInstance();
+                return asyncHttpClientImplClass.newInstance();
         } catch (InstantiationException e) {
             throw new AsyncHttpClientImplException("Unable to create the class specified by system property : "
                     + AsyncImplHelper.ASYNC_HTTP_CLIENT_IMPL_SYSTEM_PROPERTY, e);
@@ -55,47 +57,20 @@ public class AsyncHttpClientFactory {
             throw new AsyncHttpClientImplException("Unable to find the class specified by system property : "
                     + AsyncImplHelper.ASYNC_HTTP_CLIENT_IMPL_SYSTEM_PROPERTY, e);
         }
-        return new DefaultAsyncHttpClient();
-    }
-
-    public static AsyncHttpClient getAsyncHttpClient(AsyncHttpProvider provider) {
-        if (attemptInstantiation()) {
-            try {
-                Constructor<AsyncHttpClient> constructor = asyncHttpClientImplClass.getConstructor(AsyncHttpProvider.class);
-                return constructor.newInstance(provider);
-            } catch (Exception e) {
-                throw new AsyncHttpClientImplException("Unable to find the instantiate the class specified by system property : "
-                        + AsyncImplHelper.ASYNC_HTTP_CLIENT_IMPL_SYSTEM_PROPERTY + "(AsyncHttpProvider) due to : " + e.getMessage(), e);
-            }
-        }
-        return new DefaultAsyncHttpClient(provider);
+        return asyncHttpClient();
     }
 
     public static AsyncHttpClient getAsyncHttpClient(AsyncHttpClientConfig config) {
         if (attemptInstantiation()) {
             try {
-                Constructor<AsyncHttpClient> constructor = asyncHttpClientImplClass.getConstructor(AsyncHttpClientConfig.class);
+                Constructor<AsyncHttpClient> constructor = asyncHttpClientImplClass.getConstructor(DefaultAsyncHttpClientConfig.class);
                 return constructor.newInstance(config);
             } catch (Exception e) {
                 throw new AsyncHttpClientImplException("Unable to find the instantiate the class specified by system property : "
                         + AsyncImplHelper.ASYNC_HTTP_CLIENT_IMPL_SYSTEM_PROPERTY + "(AsyncHttpProvider) due to : " + e.getMessage(), e);
             }
         }
-        return new DefaultAsyncHttpClient(config);
-    }
-
-    public static AsyncHttpClient getAsyncHttpClient(AsyncHttpProvider provider, AsyncHttpClientConfig config) {
-        if (attemptInstantiation()) {
-            try {
-                Constructor<AsyncHttpClient> constructor = asyncHttpClientImplClass.getConstructor(AsyncHttpProvider.class,
-                        AsyncHttpClientConfig.class);
-                return constructor.newInstance(provider, config);
-            } catch (Exception e) {
-                throw new AsyncHttpClientImplException("Unable to find the instantiate the class specified by system property : "
-                        + AsyncImplHelper.ASYNC_HTTP_CLIENT_IMPL_SYSTEM_PROPERTY + "(AsyncHttpProvider) due to : " + e.getMessage(), e);
-            }
-        }
-        return new DefaultAsyncHttpClient(provider, config);
+        return asyncHttpClient(config);
     }
 
     private static boolean attemptInstantiation() {

@@ -14,21 +14,17 @@ package org.asynchttpclient.extras.registry;
 
 import org.asynchttpclient.AsyncHandler;
 import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.AsyncHttpClientConfig;
-import org.asynchttpclient.AsyncHttpProvider;
 import org.asynchttpclient.BoundRequestBuilder;
+import org.asynchttpclient.AsyncHttpClientConfig;
 import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Request;
+import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.SignatureCalculator;
 
 public class BadAsyncHttpClient implements AsyncHttpClient {
 
     public BadAsyncHttpClient() {
-        throw new BadAsyncHttpClientException("Because I am bad!!");
-    }
-
-    public BadAsyncHttpClient(AsyncHttpProvider provider) {
         throw new BadAsyncHttpClientException("Because I am bad!!");
     }
 
@@ -40,33 +36,14 @@ public class BadAsyncHttpClient implements AsyncHttpClient {
         throw new BadAsyncHttpClientException("Because I am bad!!");
     }
 
-    public BadAsyncHttpClient(AsyncHttpProvider httpProvider, AsyncHttpClientConfig config) {
-        throw new BadAsyncHttpClientException("Because I am bad!!");
-    }
-
-    @Override
-    public AsyncHttpProvider getProvider() {
-        return null;
-    }
-
     @Override
     public void close() {
 
     }
 
     @Override
-    public void closeAsynchronously() {
-
-    }
-
-    @Override
     public boolean isClosed() {
         return false;
-    }
-
-    @Override
-    public AsyncHttpClientConfig getConfig() {
-        return null;
     }
 
     @Override
@@ -134,4 +111,18 @@ public class BadAsyncHttpClient implements AsyncHttpClient {
         return null;
     }
 
+    @Override
+    public BoundRequestBuilder prepareRequest(RequestBuilder requestBuilder) {
+        return null;
+    }
+
+    @Override
+    public <T> ListenableFuture<T> executeRequest(RequestBuilder requestBuilder, AsyncHandler<T> handler) {
+        return null;
+    }
+
+    @Override
+    public ListenableFuture<Response> executeRequest(RequestBuilder requestBuilder) {
+        return null;
+    }
 }

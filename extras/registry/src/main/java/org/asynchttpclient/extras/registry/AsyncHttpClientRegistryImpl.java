@@ -28,7 +28,7 @@ public class AsyncHttpClientRegistryImpl implements AsyncHttpClientRegistry {
 
     /**
      * Returns a singleton instance of AsyncHttpClientRegistry
-     * @return
+     * @return the current instance
      */
     public static AsyncHttpClientRegistry getInstance() {
         if (_instance == null) {
@@ -42,9 +42,7 @@ public class AsyncHttpClientRegistryImpl implements AsyncHttpClientRegistry {
                     else
                         _instance = new AsyncHttpClientRegistryImpl();
                 }
-            } catch (InstantiationException e) {
-                throw new AsyncHttpClientImplException("Couldn't instantiate AsyncHttpClientRegistry : " + e.getMessage(), e);
-            } catch (IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException e) {
                 throw new AsyncHttpClientImplException("Couldn't instantiate AsyncHttpClientRegistry : " + e.getMessage(), e);
             } finally {
                 lock.unlock();
@@ -94,7 +92,7 @@ public class AsyncHttpClientRegistryImpl implements AsyncHttpClientRegistry {
      * org.asynchttpclient.IAsyncHttpClientRegistry#unRegister(java.lang.String)
      */
     @Override
-    public boolean unRegister(String name) {
+    public boolean unregister(String name) {
         return asyncHttpClientMap.remove(name) != null;
     }
 

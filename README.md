@@ -1,71 +1,42 @@
-Async Http Client ([@AsyncHttpClient](https://twitter.com/AsyncHttpClient) on twitter)
+Async Http Client ([@AsyncHttpClient](https://twitter.com/AsyncHttpClient) on twitter) [![Build Status](https://travis-ci.org/AsyncHttpClient/async-http-client.svg?branch=master)](https://travis-ci.org/AsyncHttpClient/async-http-client)
 ---------------------------------------------------
 
-[Javadoc](http://www.javadoc.io/doc/com.ning/async-http-client/)
+[Javadoc](http://www.javadoc.io/doc/org.asynchttpclient/async-http-client/)
 
 [Getting](https://jfarcand.wordpress.com/2010/12/21/going-asynchronous-using-asynchttpclient-the-basic/) [started](https://jfarcand.wordpress.com/2011/01/04/going-asynchronous-using-asynchttpclient-the-complex/), and use [WebSockets](http://jfarcand.wordpress.com/2011/12/21/writing-websocket-clients-using-asynchttpclient/)
 
-Async Http Client library purpose is to allow Java applications to easily execute HTTP requests and asynchronously process the HTTP responses.
+The Async Http Client library's purpose is to allow Java applications to easily execute HTTP requests and asynchronously process the HTTP responses.
 The library also supports the WebSocket Protocol. The Async HTTP Client library is simple to use.
+
+It's built on top of [Netty](https://github.com/netty/netty) and currently requires JDK8.
+
+Latest `version`: [![Maven][mavenImg]][mavenLink]
+
+[mavenImg]: https://img.shields.io/maven-central/v/org.asynchttpclient/async-http-client.svg
+[mavenLink]: http://mvnrepository.com/artifact/org.asynchttpclient/async-http-client
 
 ## Installation
 
-First, in order to add it to your Maven project, simply add this dependency:
+First, in order to add it to your Maven project, simply download from Maven central or add this dependency:
 
 ```xml
 <dependency>
-  <groupId>com.ning</groupId>
-  <artifactId>async-http-client</artifactId>
-  <version>1.9.29</version>
+	<groupId>org.asynchttpclient</groupId>
+	<artifactId>async-http-client</artifactId>
+	<version>LATEST_VERSION</version>
 </dependency>
 ```
-
-You can also download the artifact
-
-[Maven Search](http://search.maven.org)
-
-AHC is an abstraction layer that can work on top of the bare JDK, Netty and Grizzly.
-Note that the JDK implementation is very limited and you should **REALLY** use the other *real* providers.
-
-You then have to add the Netty or Grizzly jars in the classpath.
-
-For Netty:
-
-```xml
-<dependency>
-    <groupId>io.netty</groupId>
-    <artifactId>netty</artifactId>
-    <version>LATEST_NETTY_3_VERSION</version>
-</dependency>
-```
-
-For Grizzly:
-
-```xml
-<dependency>
-    <groupId>org.glassfish.grizzly</groupId>
-    <artifactId>connection-pool</artifactId>
-    <version>LATEST_GRIZZLY_VERSION</version>
-</dependency>
-<dependency>
-    <groupId>org.glassfish.grizzly</groupId>
-    <artifactId>grizzly-websockets</artifactId>
-    <version>LATEST_GRIZZLY_VERSION</version>
-</dependency>
-```
-
-Check [migration guide](MIGRATION.md) for migrating from 1.8 to 1.9.
 
 ## Usage
 
 Then in your code you can simply do
 
 ```java
-import com.ning.http.client.*;
+import org.asynchttpclient.*;
 import java.util.concurrent.Future;
 
-AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-Future<Response> f = asyncHttpClient.prepareGet("http://www.ning.com/").execute();
+AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient();
+Future<Response> f = asyncHttpClient.prepareGet("http://www.example.com/").execute();
 Response r = f.get();
 ```
 
@@ -74,11 +45,11 @@ Note that in this case all the content must be read fully in memory, even if you
 You can also accomplish asynchronous (non-blocking) operation without using a Future if you want to receive and process the response in your handler:
 
 ```java
-import com.ning.http.client.*;
+import org.asynchttpclient.*;
 import java.util.concurrent.Future;
 
-AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-asyncHttpClient.prepareGet("http://www.ning.com/").execute(new AsyncCompletionHandler<Response>(){
+AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient();
+asyncHttpClient.prepareGet("http://www.example.com/").execute(new AsyncCompletionHandler<Response>(){
     
     @Override
     public Response onCompleted(Response response) throws Exception{
@@ -99,11 +70,11 @@ asyncHttpClient.prepareGet("http://www.ning.com/").execute(new AsyncCompletionHa
 You can also mix Future with AsyncHandler to only retrieve part of the asynchronous response
 
 ```java
-import com.ning.http.client.*;
+import org.asynchttpclient.*;
 import java.util.concurrent.Future;
 
-AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-Future<Integer> f = asyncHttpClient.prepareGet("http://www.ning.com/").execute(
+AsyncHttpClient asyncHttpClient = new DefaultAsyncHttpClient();
+Future<Integer> f = asyncHttpClient.prepareGet("http://www.example.com/").execute(
    new AsyncCompletionHandler<Integer>(){
     
     @Override
@@ -126,11 +97,11 @@ which is something you want to do for large responses: this way you can process 
  You have full control on the Response life cycle, so you can decide at any moment to stop processing what the server is sending back:
 
 ```java
-import com.ning.http.client.*;
+import org.asynchttpclient.*;
 import java.util.concurrent.Future;
 
-AsyncHttpClient c = new AsyncHttpClient();
-Future<String> f = c.prepareGet("http://www.ning.com/").execute(new AsyncHandler<String>() {
+AsyncHttpClient c = new DefaultAsyncHttpClient();
+Future<String> f = c.prepareGet("http://www.example.com/").execute(new AsyncHandler<String>() {
     private ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 
     @Override
@@ -178,9 +149,10 @@ String bodyResponse = f.get();
 Finally, you can also configure the AsyncHttpClient via its AsyncHttpClientConfig object:
 
 ```java
-AsyncHttpClientConfig cf = new AsyncHttpClientConfig.Builder()
-    S.setProxyServer(new ProxyServer("127.0.0.1", 38080)).build();
-AsyncHttpClient c = new AsyncHttpClient(cf);
+AsyncHttpClientConfig cf = new DefaultAsyncHttpClientConfig.Builder()
+    .setProxyServer(new ProxyServer.Builder("127.0.0.1", 38080)).build();
+
+AsyncHttpClient c = new DefaultAsyncHttpClient(cf);
 ```
 
 ## WebSocket
@@ -212,13 +184,6 @@ WebSocket websocket = c.prepareGet(getTargetUrl())
       }).build()).get();
 ```
 
-The library uses Java non blocking I/O for supporting asynchronous operations. The default asynchronous provider is build on top of [Netty](http://www.jboss.org/netty), but the library exposes a configurable provider SPI which allows to easily plug in other frameworks like [Grizzly](http://grizzly.java.net)
-
-```java
-AsyncHttpClientConfig config = new AsyncHttpClientConfig.Builder().build();
-AsyncHttpClient client = new AsyncHttpClient(new GrizzlyAsyncHttpProvider(config), config);
-```
-
 ## User Group
 
 Keep up to date on the library development by joining the Asynchronous HTTP Client discussion group
@@ -233,11 +198,8 @@ Here a the few rules we'd like you to respect if you do so:
 
 * Only edit the code related to the suggested change, so DON'T automatically format the classes you've edited.
 * Respect the formatting rules:
-  * Ident with 4 spaces
-  * Use a 140 chars line max length
-  * Don't use * imports
-  * Stick to the org, com, javax, java imports order
+  * Indent with 4 spaces
 * Your PR can contain multiple commits when submitting, but once it's been reviewed, we'll ask you to squash them into a single one
 * Regarding licensing:
   * You must be the original author of the code you suggest.
-  * If not, you have to prove that the original code was published under Apache License 2 and properly mention original copyrights.
+  * You must give the copyright to "the AsyncHttpClient Project"

@@ -15,11 +15,14 @@
  */
 package org.asynchttpclient.extra;
 
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
+import static org.asynchttpclient.Dsl.*;
+import static org.testng.Assert.*;
+
+import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.extras.jdeferred.AsyncHttpDeferredObject;
 import org.asynchttpclient.extras.jdeferred.HttpProgress;
@@ -29,10 +32,6 @@ import org.jdeferred.Promise;
 import org.jdeferred.impl.DefaultDeferredManager;
 import org.jdeferred.multiple.MultipleResults;
 
-import java.io.IOException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
-
 public class AsyncHttpTest {
     protected DefaultDeferredManager deferredManager = new DefaultDeferredManager();
 
@@ -41,8 +40,8 @@ public class AsyncHttpTest {
         final AtomicInteger successCount = new AtomicInteger();
         final AtomicInteger progressCount = new AtomicInteger();
 
-        try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-            Promise<Response, Throwable, HttpProgress> p1 = AsyncHttpDeferredObject.promise(client.prepareGet("http://www.ning.com"));
+        try (AsyncHttpClient client = asyncHttpClient()) {
+            Promise<Response, Throwable, HttpProgress> p1 = AsyncHttpDeferredObject.promise(client.prepareGet("http://gatling.io"));
             p1.done(new DoneCallback<Response>() {
                 @Override
                 public void onDone(Response response) {
@@ -72,8 +71,8 @@ public class AsyncHttpTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger successCount = new AtomicInteger();
 
-        try (AsyncHttpClient client = new DefaultAsyncHttpClient()) {
-            Promise<Response, Throwable, HttpProgress> p1 = AsyncHttpDeferredObject.promise(client.prepareGet("http://www.ning.com"));
+        try (AsyncHttpClient client = asyncHttpClient()) {
+            Promise<Response, Throwable, HttpProgress> p1 = AsyncHttpDeferredObject.promise(client.prepareGet("http://gatling.io"));
             Promise<Response, Throwable, HttpProgress> p2 = AsyncHttpDeferredObject.promise(client.prepareGet("http://www.google.com"));
             AsyncHttpDeferredObject deferredRequest = new AsyncHttpDeferredObject(client.prepareGet("http://jdeferred.org"));
 

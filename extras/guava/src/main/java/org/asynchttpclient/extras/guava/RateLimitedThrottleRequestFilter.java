@@ -1,10 +1,10 @@
 package org.asynchttpclient.extras.guava;
 
-import org.asynchttpclient.extra.AsyncHandlerWrapper;
-import org.asynchttpclient.extra.ThrottleRequestFilter;
+import org.asynchttpclient.filter.AsyncHandlerWrapper;
 import org.asynchttpclient.filter.FilterContext;
 import org.asynchttpclient.filter.FilterException;
 import org.asynchttpclient.filter.RequestFilter;
+import org.asynchttpclient.filter.ThrottleRequestFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ public class RateLimitedThrottleRequestFilter implements RequestFilter {
             throw new FilterException(String.format("Interrupted Request %s with AsyncHandler %s", ctx.getRequest(), ctx.getAsyncHandler()));
         }
 
-        return new FilterContext.FilterContextBuilder<>(ctx).asyncHandler(new AsyncHandlerWrapper<T>(ctx.getAsyncHandler(), available))
+        return new FilterContext.FilterContextBuilder<>(ctx).asyncHandler(new AsyncHandlerWrapper<>(ctx.getAsyncHandler(), available))
                 .build();
     }
 

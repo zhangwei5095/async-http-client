@@ -14,11 +14,11 @@ package org.asynchttpclient.extras.registry;
 
 import org.asynchttpclient.AsyncHandler;
 import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.AsyncHttpClientConfig;
-import org.asynchttpclient.AsyncHttpProvider;
 import org.asynchttpclient.BoundRequestBuilder;
+import org.asynchttpclient.AsyncHttpClientConfig;
 import org.asynchttpclient.ListenableFuture;
 import org.asynchttpclient.Request;
+import org.asynchttpclient.RequestBuilder;
 import org.asynchttpclient.Response;
 import org.asynchttpclient.SignatureCalculator;
 
@@ -27,21 +27,10 @@ public class TestAsyncHttpClient implements AsyncHttpClient {
     public TestAsyncHttpClient() {
     }
 
-    public TestAsyncHttpClient(AsyncHttpProvider provider) {
-    }
-
     public TestAsyncHttpClient(AsyncHttpClientConfig config) {
     }
 
     public TestAsyncHttpClient(String providerClass, AsyncHttpClientConfig config) {
-    }
-
-    public TestAsyncHttpClient(AsyncHttpProvider httpProvider, AsyncHttpClientConfig config) {
-    }
-
-    @Override
-    public AsyncHttpProvider getProvider() {
-        return null;
     }
 
     @Override
@@ -49,17 +38,8 @@ public class TestAsyncHttpClient implements AsyncHttpClient {
     }
 
     @Override
-    public void closeAsynchronously() {
-    }
-
-    @Override
     public boolean isClosed() {
         return false;
-    }
-
-    @Override
-    public AsyncHttpClientConfig getConfig() {
-        return null;
     }
 
     @Override
@@ -124,6 +104,21 @@ public class TestAsyncHttpClient implements AsyncHttpClient {
 
     @Override
     public ListenableFuture<Response> executeRequest(Request request) {
+        return null;
+    }
+
+    @Override
+    public BoundRequestBuilder prepareRequest(RequestBuilder requestBuilder) {
+        return null;
+    }
+
+    @Override
+    public <T> ListenableFuture<T> executeRequest(RequestBuilder requestBuilder, AsyncHandler<T> handler) {
+        return null;
+    }
+
+    @Override
+    public ListenableFuture<Response> executeRequest(RequestBuilder requestBuilder) {
         return null;
     }
 
